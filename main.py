@@ -30,18 +30,29 @@ LINE = (
 MAX_CHARS = 200
 
 
-def main() -> int:
+def validate_entry() -> None:
+    """Refuse an empty or over-long entry (gate 1-MAX_CHARS)."""
     if not LINE.strip() or len(LINE) > MAX_CHARS:
         print(
             f"entry invalid: {len(LINE)} chars (gate is 1-{MAX_CHARS})",
             file=sys.stderr,
         )
-        return 1
+        raise SystemExit(1)
+
+
+def write_entry() -> str:
+    """Write LINE to the output entry file and return its path."""
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, "entry.txt")
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(LINE)
+    return path
+
+
+def main() -> int:
+    validate_entry()
+    write_entry()
     print(LINE)
     return 0
 
